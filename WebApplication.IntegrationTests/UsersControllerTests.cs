@@ -272,8 +272,9 @@ namespace WebApplication.IntegrationTests
             // Assert
             responseMessage.EnsureSuccessStatusCode();
             var createdUser = await responseMessage.DeserializeContentAsync<UserDto>();
+            // Julian: changed this from $"/Users?id={createdUser.UserId}" as test will not pass otherwise with default Headers.Location returned by CreatedByAction
             responseMessage.Headers.Location.Should()
-                           .Be($"/Users?id={createdUser.UserId}");
+                           .Be($"{client.BaseAddress}Users?id={createdUser.UserId}");
 
             var getUrl = $"{client.BaseAddress}Users?id={createdUser.UserId}";
             HttpResponseMessage getResponse = await client.GetAsync(getUrl);

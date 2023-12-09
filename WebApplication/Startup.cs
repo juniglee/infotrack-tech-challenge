@@ -33,6 +33,7 @@ namespace WebApplication
                         options =>
                         {
                             options.RespectBrowserAcceptHeader = true;
+                            options.SuppressAsyncSuffixInActionNames = false;
                             options.Filters.Add(new ProducesAttribute(MediaTypeNames.Application.Json, "application/problem+json"));
                             options.Filters.Add(new ConsumesAttribute(MediaTypeNames.Application.Json));
 

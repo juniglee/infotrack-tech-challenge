@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using AutoMapper;
 using FluentValidation;
+using FluentValidation.Results;
 using MediatR;
 using WebApplication.Core.Common.Exceptions;
 using WebApplication.Core.Users.Common.Models;
@@ -37,6 +38,10 @@ namespace WebApplication.Core.Users.Queries
             /// <inheritdoc />
             public async Task<UserDto> Handle(GetUserQuery request, CancellationToken cancellationToken)
             {
+                Validator validator = new Validator();
+                ValidationResult validationResult = validator.Validate(request);
+                if (!validationResult.IsValid) throw new ValidationException(validationResult.Errors);
+
                 User? user = await _userService.GetAsync(request.Id, cancellationToken);
 
                 if (user is default(User)) throw new NotFoundException($"The user '{request.Id}' could not be found.");

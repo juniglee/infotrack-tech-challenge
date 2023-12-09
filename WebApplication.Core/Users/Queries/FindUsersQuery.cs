@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using FluentValidation;
+using FluentValidation.Results;
 using MediatR;
 using WebApplication.Core.Users.Common.Models;
 using WebApplication.Infrastructure.Entities;
@@ -44,6 +45,10 @@ namespace WebApplication.Core.Users.Queries
             /// <inheritdoc />
             public async Task<IEnumerable<UserDto>> Handle(FindUsersQuery request, CancellationToken cancellationToken)
             {
+                Validator validator = new Validator();
+                ValidationResult validationResult = validator.Validate(request);
+                if (!validationResult.IsValid) throw new ValidationException(validationResult.Errors);
+
                 IEnumerable<User> users = await _userService.FindAsync(request.GivenNames, request.LastName, cancellationToken);
                 return users.Select(user => _mapper.Map<UserDto>(user));
             }
