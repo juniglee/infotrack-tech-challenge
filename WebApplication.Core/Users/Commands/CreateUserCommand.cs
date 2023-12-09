@@ -55,10 +55,6 @@ namespace WebApplication.Core.Users.Commands
             /// <inheritdoc />
             public async Task<UserDto> Handle(CreateUserCommand request, CancellationToken cancellationToken)
             {
-                Validator validator = new Validator();
-                ValidationResult validationResult = validator.Validate(request);
-                if (!validationResult.IsValid) throw new ValidationException(validationResult.Errors);
-
                 User user = new User
                 {
                     GivenNames = request.GivenNames,

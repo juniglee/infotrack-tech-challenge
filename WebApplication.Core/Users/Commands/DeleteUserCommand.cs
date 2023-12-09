@@ -38,10 +38,6 @@ namespace WebApplication.Core.Users.Commands
             /// <inheritdoc />
             public async Task<UserDto> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
             {
-                Validator validator = new Validator();
-                ValidationResult validationResult = validator.Validate(request);
-                if (!validationResult.IsValid) throw new ValidationException(validationResult.Errors);
-
                 User? deletedUser = await _userService.DeleteAsync(request.Id, cancellationToken);
 
                 if (deletedUser is default(User)) throw new NotFoundException($"The user '{request.Id}' could not be found.");

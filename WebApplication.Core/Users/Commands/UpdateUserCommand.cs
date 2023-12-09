@@ -58,12 +58,6 @@ namespace WebApplication.Core.Users.Commands
             /// <inheritdoc />
             public async Task<UserDto> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
             {
-                //throw new NotImplementedException("Implement a way to update the user associated with the provided Id.");
-
-                Validator validator = new Validator();
-                ValidationResult validationResult = validator.Validate(request);
-                if (!validationResult.IsValid) throw new ValidationException(validationResult.Errors);
-
                 User? user = await _userService.GetAsync(request.Id, cancellationToken);
                 if (user is default(User)) { 
                     throw new NotFoundException($"The user '{request.Id}' could not be found."); 
