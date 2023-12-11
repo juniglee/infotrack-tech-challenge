@@ -2,8 +2,8 @@
 using System.Threading.Tasks;
 using AutoMapper;
 using FluentValidation;
-using FluentValidation.Results;
 using MediatR;
+using NLog;
 using WebApplication.Core.Common.Exceptions;
 using WebApplication.Core.Users.Common.Models;
 using WebApplication.Infrastructure.Entities;
@@ -26,6 +26,7 @@ namespace WebApplication.Core.Users.Commands
 
         public class Handler : IRequestHandler<DeleteUserCommand, UserDto>
         {
+            private Logger logger = LogManager.GetCurrentClassLogger();
             private readonly IUserService _userService;
             private readonly IMapper _mapper;
 
@@ -38,9 +39,14 @@ namespace WebApplication.Core.Users.Commands
             /// <inheritdoc />
             public async Task<UserDto> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
             {
+                string userIdCouldNotBeFound = $"The user '{request.Id}' could not be found.";
                 User? deletedUser = await _userService.DeleteAsync(request.Id, cancellationToken);
 
-                if (deletedUser is default(User)) throw new NotFoundException($"The user '{request.Id}' could not be found.");
+                if (deletedUser is default(User))
+                {
+                    logger.Error(userIdCouldNotBeFound);
+                    throw new NotFoundException(userIdCouldNotBeFound);
+                }
 
                 return _mapper.Map<UserDto>(deletedUser);
             }

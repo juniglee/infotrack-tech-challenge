@@ -3,13 +3,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using FluentValidation;
-using FluentValidation.Results;
 using MediatR;
+using NLog;
 using WebApplication.Core.Common.Exceptions;
 using WebApplication.Core.Users.Common.Models;
 using WebApplication.Infrastructure.Entities;
 using WebApplication.Infrastructure.Interfaces;
-using WebApplication.Infrastructure.Services;
 
 namespace WebApplication.Core.Users.Commands
 {
@@ -46,6 +45,7 @@ namespace WebApplication.Core.Users.Commands
 
         public class Handler : IRequestHandler<UpdateUserCommand, UserDto>
         {
+            private Logger logger = LogManager.GetCurrentClassLogger();
             private readonly IUserService _userService;
             private readonly IMapper _mapper;
 
@@ -58,9 +58,12 @@ namespace WebApplication.Core.Users.Commands
             /// <inheritdoc />
             public async Task<UserDto> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
             {
+                string userIdCouldNotBeFound = $"The user '{request.Id}' could not be found.";
+
                 User? user = await _userService.GetAsync(request.Id, cancellationToken);
-                if (user is default(User)) { 
-                    throw new NotFoundException($"The user '{request.Id}' could not be found."); 
+                if (user is default(User)) {
+                    logger.Error(userIdCouldNotBeFound);
+                    throw new NotFoundException(userIdCouldNotBeFound); 
                 }
                 else
                 {

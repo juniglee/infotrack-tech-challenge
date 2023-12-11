@@ -3,9 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using FluentValidation;
-using FluentValidation.Results;
 using MediatR;
-using WebApplication.Core.Common.Exceptions;
 using WebApplication.Core.Users.Common.Models;
 using WebApplication.Infrastructure.Entities;
 using WebApplication.Infrastructure.Interfaces;
@@ -24,20 +22,16 @@ namespace WebApplication.Core.Users.Commands
             public Validator()
             {
                 RuleFor(x => x.GivenNames)
-                    .NotEmpty()
-                    .WithMessage($"Given Names cannot be empty.");
+                    .NotEmpty();
 
                 RuleFor(x => x.LastName)
-                    .NotEmpty()
-                    .WithMessage($"Last Name cannot be empty.");
+                    .NotEmpty();
 
                 RuleFor(x => x.EmailAddress)
-                    .NotEmpty()
-                    .WithMessage($"Email Address cannot be empty.");
+                    .NotEmpty();
 
                 RuleFor(x => x.MobileNumber)
-                    .NotEmpty()
-                    .WithMessage($"Mobile Number cannot be empty.");
+                    .NotEmpty();
             }
         }
 

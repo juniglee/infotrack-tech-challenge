@@ -3,14 +3,15 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
-using FluentValidation.Results;
 using MediatR;
+using NLog;
 
 namespace WebApplication.Core.Common.Behaviours
 {
     public class RequestValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : notnull
     {
         private readonly IEnumerable<IValidator<TRequest>> _validators;
+        private Logger logger = LogManager.GetCurrentClassLogger();
 
         public RequestValidationBehaviour(IEnumerable<IValidator<TRequest>> validators)
         {
@@ -35,6 +36,7 @@ namespace WebApplication.Core.Common.Behaviours
 
             if (errors.Any())
             {
+                logger.Error(string.Join("|", errors.Select(e => e.ErrorMessage).ToArray()));
                 throw new ValidationException(errors);
             }
 

@@ -2,8 +2,8 @@
 using System.Threading.Tasks;
 using AutoMapper;
 using FluentValidation;
-using FluentValidation.Results;
 using MediatR;
+using NLog;
 using WebApplication.Core.Common.Exceptions;
 using WebApplication.Core.Users.Common.Models;
 using WebApplication.Infrastructure.Entities;
@@ -17,15 +17,16 @@ namespace WebApplication.Core.Users.Queries
 
         public class Validator : AbstractValidator<GetUserQuery>
         {
-            public Validator()
+            public Validator(IUserService userService)
             {
                 RuleFor(x => x.Id)
-                    .GreaterThan(0);
+                .GreaterThan(0);
             }
         }
 
         public class Handler : IRequestHandler<GetUserQuery, UserDto>
         {
+            private Logger logger = LogManager.GetCurrentClassLogger();
             private readonly IUserService _userService;
             private readonly IMapper _mapper;
 
@@ -38,9 +39,14 @@ namespace WebApplication.Core.Users.Queries
             /// <inheritdoc />
             public async Task<UserDto> Handle(GetUserQuery request, CancellationToken cancellationToken)
             {
+                string userIdCouldNotBeFound = $"The user '{request.Id}' could not be found.";
                 User? user = await _userService.GetAsync(request.Id, cancellationToken);
 
-                if (user is default(User)) throw new NotFoundException($"The user '{request.Id}' could not be found.");
+                if (user is default(User)) 
+                {
+                    logger.Error(userIdCouldNotBeFound);
+                    throw new NotFoundException(userIdCouldNotBeFound); 
+                }
 
                 UserDto result = _mapper.Map<UserDto>(user);
 

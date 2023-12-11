@@ -73,7 +73,6 @@ namespace WebApplication.Controllers
             CancellationToken cancellationToken)
         {
             UserDto result = await _mediator.Send(query, cancellationToken);
-            //return Ok(result);
             return CreatedAtAction(nameof(GetUserAsync), new { id = result.UserId }, result);
         }
 
